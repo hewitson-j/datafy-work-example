@@ -1,0 +1,14 @@
+{
+  "name": "datafy",
+  "version": "1.0.0",
+  "description": "Work example for Datafy",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Jacob Hewitson",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
