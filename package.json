@@ -3,12 +3,17 @@
   "version": "1.0.0",
   "description": "Work example for Datafy",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Jacob Hewitson",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.18.2"
+    "body-parser": "^1.20.2",
+    "express": "^4.18.2",
+    "mysql": "^2.18.1",
+    "reflect-metadata": "^0.1.13",
+    "typeorm": "^0.3.17"
   }
 }
