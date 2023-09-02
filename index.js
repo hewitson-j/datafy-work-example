@@ -1,17 +1,7 @@
 import "reflect-metadata";
 import express from "express";
-import { DataSource } from "typeorm";
-import { Note } from "./entity/Note.js";
-
-const AppDataSource = new DataSource({
-  type: "mysql",
-  host: "localhost",
-  port: 3306,
-  username: "root",
-  password: "PerLim1618!",
-  database: "datafy_api",
-  entities: [Note],
-});
+import AppDataSource from "./AppDataSource.js";
+import noteRoutes from "./routes/note.controller.js";
 
 AppDataSource.initialize()
   .then(() => {
@@ -22,6 +12,7 @@ AppDataSource.initialize()
   });
 
 const app = express();
+app.use("/api", noteRoutes);
 
 const port = 5000;
 
