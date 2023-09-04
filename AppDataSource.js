@@ -9,7 +9,7 @@ const AppDataSource = new DataSource({
   password: "PerLim1618!",
   database: "datafy_api",
   entities: [Note],
-  synchronize: true,
+  synchronize: false,
 });
 
 export default AppDataSource;

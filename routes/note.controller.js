@@ -7,7 +7,6 @@ const noteRepository = AppDataSource.getRepository(Note);
 
 // Create new record
 router.post("/notes", async (req, res) => {
-  console.log(req.body);
   try {
     const { title, body } = req.body;
 
@@ -20,9 +19,6 @@ router.post("/notes", async (req, res) => {
       return res.status(400).json({ error: "Unable to create note" });
     }
 
-    // const note = new Note();
-    // note.title = title;
-    // note.body = body;
     const savedNote = await noteRepository.save({
       title,
       body,
@@ -31,7 +27,6 @@ router.post("/notes", async (req, res) => {
     console.log("Record added successfully.");
     return res.status(201).json(savedNote);
   } catch (error) {
-    console.log(error);
     return res.status(500).json({ error: "Unable to create note" });
   }
 });
@@ -45,14 +40,20 @@ router.get("/notes", async (_, res) => {
 
 // Get by ID
 router.get("/notes/:id", async (req, res) => {
-  const { id } = req.params;
+  const { id: idString } = req.params;
+
+  const id = parseInt(idString, 10);
 
   try {
     if (id === null) {
       console.log("Missing ID");
       return res.status(400).json({ error: "Missing ID" });
     }
-    const note = await noteRepository.findOne(id);
+    const note = await noteRepository.findOne({
+      where: {
+        id,
+      },
+    });
     return res.json(note);
   } catch (error) {
     console.log(`Note with id ${id} not found.`, error);
@@ -62,37 +63,65 @@ router.get("/notes/:id", async (req, res) => {
 
 // Update by ID
 router.put("/notes/:id", async (req, res) => {
-  const { id } = req.params;
-  const { title, body } = req.body;
+  const { id: idString } = req.params;
 
-  if (title === "") {
-    console.log("Note title can't be empty.");
-    return res.status(400).json({ error: "Unable to create note" });
-  }
-  if (body === "") {
-    console.log("Note body can't be empty.");
-    return res.status(400).json({ error: "Unable to create note" });
-  }
+  const id = parseInt(idString, 10);
 
+  // Check for existence of note to update, exit if it does not exist
   try {
+    await noteRepository.findOne({
+      where: {
+        id,
+      },
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(404).json({ error: "Note does not exist" });
+  }
+
+  // Update note
+  try {
+    const { title, body } = req.body;
+
+    if (title === "") {
+      console.log("Note title can't be empty.");
+      return res.status(400).json({ error: "Unable to create note" });
+    }
+    if (body === "") {
+      console.log("Note body can't be empty.");
+      return res.status(400).json({ error: "Unable to create note" });
+    }
     await noteRepository.update(id, { title, body });
-    const updatedNote = await noteRepository.findOne(id);
+
+    const updatedNote = await noteRepository.findOne({
+      where: {
+        id,
+      },
+    });
+
     return res.json(updatedNote);
   } catch (error) {
+    console.log(error);
     return res.status(500).json({ error: "Unable to update note" });
   }
 });
 
 // Delete by ID
 router.delete("/notes/:id", async (req, res) => {
-  const { id } = req.params;
+  const { id: idString } = req.params;
+
+  const id = parseInt(idString);
 
   if (id === null) {
     console.log("Must include ID in search.");
     return res.status(400).json({ error: "ID missing." });
   }
   try {
-    const note = await noteRepository.findOne(id);
+    const note = await noteRepository.findOne({
+      where: {
+        id,
+      },
+    });
 
     if (note) {
       try {
