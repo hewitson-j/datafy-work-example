@@ -7,25 +7,31 @@ const noteRepository = AppDataSource.getRepository(Note);
 
 // Create new record
 router.post("/notes", async (req, res) => {
-  const { title, body } = req.body;
-  if (title === "") {
-    console.log("Note title can't be empty.");
-    return res.status(400).json({ error: "Unable to create note" });
-  }
-  if (body === "") {
-    console.log("Note body can't be empty.");
-    return res.status(400).json({ error: "Unable to create note" });
-  }
-
-  const note = new Note();
-  note.title = title;
-  note.body = body;
-
+  console.log(req.body);
   try {
-    const savedNote = await noteRepository.save(note);
+    const { title, body } = req.body;
+
+    if (title === "") {
+      console.log("Note title can't be empty.");
+      return res.status(400).json({ error: "Unable to create note" });
+    }
+    if (body === "") {
+      console.log("Note body can't be empty.");
+      return res.status(400).json({ error: "Unable to create note" });
+    }
+
+    // const note = new Note();
+    // note.title = title;
+    // note.body = body;
+    const savedNote = await noteRepository.save({
+      title,
+      body,
+    });
+
     console.log("Record added successfully.");
     return res.status(201).json(savedNote);
   } catch (error) {
+    console.log(error);
     return res.status(500).json({ error: "Unable to create note" });
   }
 });
