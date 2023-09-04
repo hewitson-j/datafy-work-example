@@ -40,13 +40,18 @@ router.get("/notes", async (_, res) => {
 // Get by ID
 router.get("/notes/:id", async (req, res) => {
   const { id } = req.params;
-  const note = await noteRepository.findOne(id);
 
-  if (!note) {
+  try {
+    if (id === null) {
+      console.log("Missing ID");
+      return res.status(400).json({ error: "Missing ID" });
+    }
+    const note = await noteRepository.findOne(id);
+    return res.json(note);
+  } catch (error) {
+    console.log(`Note with id ${id} not found.`, error);
     return res.status(404).json({ error: "Note not found" });
   }
-
-  return res.json(note);
 });
 
 // Update by ID
