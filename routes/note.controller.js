@@ -67,7 +67,6 @@ router.put("/notes/:id", async (req, res) => {
 
   const id = parseInt(idString, 10);
 
-  // Check for existence of note to update, exit if it does not exist
   try {
     await noteRepository.findOne({
       where: {
@@ -109,13 +108,8 @@ router.put("/notes/:id", async (req, res) => {
 // Delete by ID
 router.delete("/notes/:id", async (req, res) => {
   const { id: idString } = req.params;
-
   const id = parseInt(idString);
 
-  if (id === null) {
-    console.log("Must include ID in search.");
-    return res.status(400).json({ error: "ID missing." });
-  }
   try {
     const note = await noteRepository.findOne({
       where: {
@@ -123,22 +117,19 @@ router.delete("/notes/:id", async (req, res) => {
       },
     });
 
-    if (note) {
-      try {
-        // if id exists
-        await noteRepository.delete(id);
-        console.log(`Note ${id} deleted.`);
-        // return 200
+    if (note === null) throw new Error("Note does not exist");
+  } catch (error) {
+    console.log(error);
+    return res.status(400).json({ error: "Could not delete note" });
+  }
 
-        // else return 400
-        return res.status(200).send();
-      } catch (error) {
-        return res.status(500).json({ error: "Unable to delete note" });
-      }
-    }
-  } catch {
-    console.log(`Note not found with id ${id}`);
-    return res.status(404).json({ error: "Note not found" });
+  try {
+    await noteRepository.delete(id);
+    return res.status(200).send({
+      message: `Success. Note with id ${id} has been deleted`,
+    });
+  } catch (error) {
+    return res.status(500).json({ error: "Unable to delete note" });
   }
 });
 
